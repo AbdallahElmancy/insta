@@ -6,28 +6,33 @@ const addPost = async (req, res) => {
   try {
     let { desc, title, tagsLink } = req.body;
     let allPics = [];
-
-    if (req.files.lenght > 0 || req.files) {
-      for (let index = 0; index < req.files.length; index++) {
-        let imageURL = `${req.protocol}://${req.headers.host}/${req.files[index].path}`;
-        allPics.push(imageURL);
+    if(req.files != undefined){
+      if (req.files.length > 0 || req.files) {
+        for (let index = 0; index < req.files.length; index++) {
+          let imageURL = `${req.protocol}://${req.headers.host}/${req.files[index].path}`;
+          allPics.push(imageURL);
+        }
       }
     }
+ 
 
     let tagedEmail = "";
     let validId = [];
-    if (tagsLink.length) {
-      for (let index = 0; index < tagsLink.length; index++) {
-        let findUser = await userModel.findOne({ _id: tagsLink[index] });
-        if (findUser) {
-          validId.push(tagsLink[index]);
-          if (tagedEmail.length) {
-            tagedEmail = tagedEmail + "," + findUser.email;
-          } else {
-            tagedEmail = findUser.email;
+    if (tagsLink != undefined) {
+      if (tagsLink.length) {
+        for (let index = 0; index < tagsLink.length; index++) {
+          let findUser = await userModel.findOne({ _id: tagsLink[index] });
+          if (findUser) {
+            validId.push(tagsLink[index]);
+            if (tagedEmail.length) {
+              tagedEmail = tagedEmail + "," + findUser.email;
+            } else {
+              tagedEmail = findUser.email;
+            }
           }
         }
-      }
+    }
+   
     }
 
     let addPost = new postModel({
@@ -117,30 +122,37 @@ const createComments = async (req, res) => {
  try {
   let { id } = req.params;
   let { desc, tags } = req.body;
-
-  let allPics = [];
-  if (req.files.lenght > 0 || req.files) {
-    for (let index = 0; index < req.files.length; index++) {
-      let imageURL = `${req.protocol}://${req.headers.host}/${req.files[index].path}`;
-      allPics.push(imageURL);
-    }
-  }
-
-  let tagedEmail = "";
-  let validId = [];
-  if (tags.length > 0) {
-    for (let index = 0; index < tags.length; index++) {
-      let findUser = await userModel.findOne({ _id: tags[index] });
-      if (findUser) {
-        validId.push(tags[index]);
-        if (tagedEmail.length) {
-          tagedEmail = tagedEmail + "," + findUser.email;
-        } else {
-          tagedEmail = findUser.email;
-        }
+  if(req.files != undefined){
+    let allPics = [];
+    if (req.files.lenght > 0 || req.files) {
+      for (let index = 0; index < req.files.length; index++) {
+        let imageURL = `${req.protocol}://${req.headers.host}/${req.files[index].path}`;
+        allPics.push(imageURL);
       }
     }
   }
+
+
+
+  let tagedEmail = "";
+  let validId = [];
+  if(req.files != undefined){
+    if (tags.length > 0) {
+      for (let index = 0; index < tags.length; index++) {
+        let findUser = await userModel.findOne({ _id: tags[index] });
+        if (findUser) {
+          validId.push(tags[index]);
+          if (tagedEmail.length) {
+            tagedEmail = tagedEmail + "," + findUser.email;
+          } else {
+            tagedEmail = findUser.email;
+          }
+        }
+      }
+    }
+  
+  }
+
 
   if (tagedEmail != "") {
     sendEmail(
